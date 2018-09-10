@@ -26,7 +26,7 @@ char Card::getSuit() {
 }
 
 string Card::print() {
-	string s = cards[value] + " of ";
+	string s = " " + cards[value] + " of ";
 	if (suit == 'c') s += "Clubs";
 	if (suit == 'd') s += "Diamonds";
 	if (suit == 's') s += "Spades";

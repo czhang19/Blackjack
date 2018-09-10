@@ -17,8 +17,9 @@ Deck::Deck(int x) {
 void Deck::shuffle() {
 	cout << "The dealer is shuffling the deck.\n";
 	vector<Card*> temp = availableCards;
-	for (int i = 0; i < availableCards.size(); i++) {
-		int x = rand()%(temp.size()-i);
+	int size = temp.size();
+	for (int i = 0; i < size; i++) {
+		int x = rand()%(size-i);
 		deck.push(temp[x]);
 		temp.erase(temp.begin()+x);
 	}

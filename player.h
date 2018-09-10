@@ -1,6 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 #include "card.h"
+#include "deck.h"
 #include <vector>
 
 class Player {
@@ -9,16 +10,19 @@ public:
 	
 	int getTotalAmount();
 	int getBet();
+	int getTotalPoints();
 	Card* getCard(int x);
 	
-	void stand();
-	void hit();
-	void setBet(int x);
 	void bet();
-	void setCards(Card* c);
+	void setBet(int x);
+	void loseBet();
+	void winBet();
+	void changeTotalAmount(int x); //changes player's total amount by x
+	void addCard(Card* c);
+	void printAllCards();
 	void clearCards();
 	
-	
+	bool turnIsOver;
 private:
 	int totalAmount;
 	int currentBet;
