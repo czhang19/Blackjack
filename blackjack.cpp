@@ -39,25 +39,52 @@ Variables:
 #include "player.h"
 using namespace std;
 
+int getPlayers() {
+	bool valid = false;
+	char choice;
+	int players;
+	cout << "Would you like to play single player(s) or multiplayer(m)? ";
+	while (!valid) {
+		cin >> choice;
+		switch(choice) {
+			case('s'): return 1;
+			case('m'): valid = true;
+				break;
+			default: cout << "Please enter 's' for single player or 'm' for multiplayer.\n";
+		}
+	}
+	valid = false;
+	cout << "How many players do you have? (2-5) ";
+	while (!valid) {
+		cin >> players;
+		if (players > 5 || players < 2) {
+			cout << "Please enter either 2, 3, 4 or 5.\n";
+		} else {
+			valid = true;
+		}
+	}
+	return players;
+}
+
 void startGame() {
 	int initialAmount = 1000, numberOfPlayers; //total amount of money player starts with
-	cout << "Let's play Blackjack! How many players do you have? (1-5) ";
-	cin >> numberOfPlayers;
+	cout << "Let's play Blackjack! ";
+	numberOfPlayers = getPlayers();
 	cout << "Players start with $" << initialAmount << ".\n";
 	vector<Player*> players; //dealer is the last player in this vector
 	for (int i = 0; i < numberOfPlayers+1; i++) {
 		players.push_back(new Player(initialAmount));
 	}
 	
-	srand(time(NULL));
-	Deck d = Deck(1);
-	bool keepPlaying = true;
+	srand(time(NULL)); //randomizes shuffling of cards
+	Deck d = Deck(1); //one deck of cards
+	bool keepPlaying = true; 
 	while (keepPlaying) { //simulates every turn
 		for (int i = 0; i < numberOfPlayers; i++) { //each player makes a bet
 			cout << "Player " << i+1 << ". ";
 			players[i]->bet();
 		}
-		for (int j = 0; j < 2; j++) { //each player is dealt two cards
+		for (int j = 0; j < 2; j++) { //dealer and each player is dealt two cards
 			for (int i = 0; i < numberOfPlayers+1; i++) {
 				if (j == 0) players[i]->clearCards();
 				players[i]->addCard(d.draw());
@@ -129,7 +156,7 @@ void startGame() {
 			int dealerTotal = players[numberOfPlayers]->getTotalPoints();
 			for (int i = 0; i < numberOfPlayers; i++) { //players still left either win or lose
 				if (!players[i]->turnIsOver) {
-					if (players[i]->getTotalPoints() > dealerTotal) {
+					if (dealerTotal > 21 || players[i]->getTotalPoints() > dealerTotal) {
 						players[i]->winBet();
 					} else if (players[i]->getTotalPoints() < dealerTotal) {
 						players[i]->loseBet();
@@ -137,8 +164,6 @@ void startGame() {
 				}
 			}
 		}
-		
-		
 		
 		
 		//below only meant for one player
