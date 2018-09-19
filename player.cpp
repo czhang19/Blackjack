@@ -61,6 +61,7 @@ void Player::printAllCards() {
 		if (i != 0) cout << ",";
 		cout << currentCards[i]->print();
 	}
+	cout << endl;
 }
 
 void Player::clearCards() {

@@ -96,14 +96,16 @@ void startGame() {
 		cout << "The dealer's cards are the" << players[numberOfPlayers]->getCard(0)->print() << " and a face down card.\n"; 
 		
 		if (players[numberOfPlayers]->getTotalPoints() == 21) { //if dealer has a blackjack
-			cout << "The dealer has a blackjack.\n";
+			cout << "The dealer has a blackjack. The dealer's cards are the" << players[numberOfPlayers]->getCard(0)->print() << " and " << players[numberOfPlayers]->getCard(1)->print() << endl; 
 			for (int i = 0; i < numberOfPlayers; i++) {
 				if (players[i]->getTotalPoints() != 21) players[i]->loseBet();
 			}
 		} else {
 			bool stand;
+			bool originalCards;
 			for (int i = 0; i < numberOfPlayers; i++) { //each player has their turn
-				if (players[i]->getTotalPoints() == 21) {
+				int totalPoints = players[i]->getTotalPoints();
+				if (totalPoints == 21) {
 					cout << "Player " << i+1 << " has a blackjack.\n";
 					players[i]->changeTotalAmount(1.5*players[i]->getBet());
 					players[i]->turnIsOver = true;
@@ -111,33 +113,41 @@ void startGame() {
 				}
 				char play;
 				stand = false;
+				originalCards = true;
 				while (!stand) {
-					cout << "Player " << i+1 << ", do you stand(s), hit(h) or double down(d)? ";
+					totalPoints = players[i]->getTotalPoints();
+					if (originalCards && (totalPoints == 9 || totalPoints == 10 || totalPoints == 11)) {
+						cout << "Player " << i+1 << ", do you stand(s), hit(h) or double down(d)? ";
+					} else {
+						cout << "Player " << i+1 << ", do you stand(s) or hit(h)? ";
+					}
 					cin >> play;
-					if (play == 's') {
+					if (play == 's') { //if player stands
 						stand = true;
 					}
-					if (play == 'h') {
+					if (play == 'h') { //if player hits
 						players[i]->addCard(d.draw());
+						totalPoints = players[i]->getTotalPoints();
 						cout << "Your cards are:";
 						players[i]->printAllCards();
-						cout << endl;
-						if (players[i]->getTotalPoints() > 21) {
+						if (totalPoints > 21) {
 							players[i]->loseBet();
 							stand = true;
 							players[i]->turnIsOver = true;
 						}
 					}
-					if (play == 'd') {
-						//double down 
+					if (play == 'd') { //if player doubles down
+						players[i]->addCard(d.draw());
+						players[i]->setBet(players[i]->getBet()*2);
+						stand = true;
 					}
+					originalCards = false;
 				}
 			}
 			
 			//dealer's play
 			cout << "The dealer's cards are:";
 			players[numberOfPlayers]->printAllCards();
-			cout << endl;
 			stand = false;
 			while (!stand) {
 				if (players[numberOfPlayers]->getTotalPoints() >= 17) {
@@ -146,10 +156,19 @@ void startGame() {
 					players[numberOfPlayers]->addCard(d.draw());
 					cout << "The dealer's cards are:";
 					players[numberOfPlayers]->printAllCards();
-					cout << endl;
 					if (players[numberOfPlayers]->getTotalPoints() > 21) {
 						stand = true;
 					}
+				}
+			}
+			
+			if (numberOfPlayers == 1) {
+				cout << "Your cards are:";
+				players[0]->printAllCards();
+			} else {
+				for (int i = 0; i < numberOfPlayers; i++) {
+					cout << "Player " << i+1 << "'s cards are:";
+					players[i]->printAllCards();
 				}
 			}
 			
@@ -171,7 +190,14 @@ void startGame() {
 			cout << "You've lost all your money. The game is over.\n";
 			keepPlaying = false;
 		} else {
-			cout << "You currently have $" << players[0]->getTotalAmount() << endl;
+			if (numberOfPlayers == 1) {
+				cout << "You currently have $" << players[0]->getTotalAmount() << endl;
+			} else {
+				for (int i = 0; i < numberOfPlayers; i++) {
+					cout << "Player " << i+1 << " currently has $" << players[i]->getTotalAmount() << endl;
+				}
+			}
+			
 		}
 		bool validAnswer = false;
 		while (!validAnswer) {
